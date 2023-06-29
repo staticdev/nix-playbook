@@ -1,0 +1,28 @@
+---
+- name: Define hosts
+  hosts: all
+
+  pre_tasks:
+    - name: Load config
+      ansible.builtin.include_vars: "{{ item }}"
+      with_fileglob:
+        - "{{ playbook_dir }}/config.yml"
+
+    - name: Ensure workspace user exists
+      become: true
+      ansible.builtin.user:
+        name: "{{ workspace_user }}"
+        state: present
+      register: workspace_user_details
+
+    - name: Install Nix package manager
+      ansible.builtin.import_role:
+        name: ableton.nix
+      vars:
+        nix_user: "{{ workspace_user }}"
+
+    - name: "Install nix package kubectl"
+      ansible.builtin.command: "nix-env -iA nixpkgs.kubectl"
+      environment:
+        PATH: "{{ workspace_user_details.home + '/.nix-profile/bin:$PATH' }}"
+      changed_when: true
