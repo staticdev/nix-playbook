@@ -1,7 +1,6 @@
 ---
 - name: Converge
   hosts: all
-  become: true
 
 - name: Import playbook
   import_playbook: ../../main.yml

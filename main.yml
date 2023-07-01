@@ -8,21 +8,21 @@
       with_fileglob:
         - "{{ playbook_dir }}/config.yml"
 
-    - name: Ensure workspace user exists
-      become: true
-      ansible.builtin.user:
-        name: "{{ workspace_user }}"
-        state: present
-      register: workspace_user_details
-
     - name: Install Nix package manager
       ansible.builtin.import_role:
         name: ableton.nix
-      vars:
-        nix_user: "{{ workspace_user }}"
+
+    - name: "Check installation of kubectl"
+      ansible.builtin.command: "kubectl version --client"
+      environment:
+        PATH: "{{ ansible_env.HOME + '/.nix-profile/bin:$PATH' }}"
+      register: package_check_cmd
+      changed_when: false
+      ignore_errors: true  
 
     - name: "Install nix package kubectl"
       ansible.builtin.command: "nix-env -iA nixpkgs.kubectl"
       environment:
-        PATH: "{{ workspace_user_details.home + '/.nix-profile/bin:$PATH' }}"
+        PATH: "{{ ansible_env.HOME + '/.nix-profile/bin:$PATH' }}"
       changed_when: true
+      when: package_check_cmd.failed
