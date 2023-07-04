@@ -20,7 +20,7 @@
         PATH: "{{ ansible_env.HOME + '/.nix-profile/bin:$PATH' }}"
       register: package_check_cmd
       changed_when: false
-      ignore_errors: true  
+      ignore_errors: true
 
     - name: "Install nix package kubectl"
       ansible.builtin.command: "nix profile install nixpkgs#kubectl"
