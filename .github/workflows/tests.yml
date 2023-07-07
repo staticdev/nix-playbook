@@ -66,9 +66,13 @@ jobs:
       - name: Install test dependencies
         run: pip3 install --constraint=.github/workflows/constraints.txt ansible 'molecule-plugins[podman]' podman
 
+      - name: Show envs
+        run: env|grep -i xdg
+
       - name: Run Molecule tests
-        run: molecule -v test
+        run: molecule -vvv test
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          XDG_CONFIG_HOME: ""
