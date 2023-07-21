@@ -11,6 +11,8 @@
     - name: Install Nix package manager
       ansible.builtin.import_role:
         name: ableton.nix
+      vars:
+        nix_flakes: true
 
     - name: "Check installation of kubectl"
       ansible.builtin.command: "kubectl version --client"
@@ -18,10 +20,10 @@
         PATH: "{{ ansible_env.HOME + '/.nix-profile/bin:$PATH' }}"
       register: package_check_cmd
       changed_when: false
-      ignore_errors: true  
+      ignore_errors: true
 
     - name: "Install nix package kubectl"
-      ansible.builtin.command: "nix-env -iA nixpkgs.kubectl"
+      ansible.builtin.command: "nix profile install nixpkgs#kubectl"
       environment:
         PATH: "{{ ansible_env.HOME + '/.nix-profile/bin:$PATH' }}"
       changed_when: true
